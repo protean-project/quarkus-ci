@@ -3,6 +3,8 @@ name: Java CI
 on: [push, pull_request]
 
 env:
+  # Workaround testsuite locale issue
+  LANG: en_US.UTF-8
   NATIVE_TEST_MAVEN_OPTS: "-B --settings azure-mvn-settings.xml -Dquarkus.native.container-build=true -Dtest-postgresql -Dtest-elasticsearch -Dtest-keycloak -Ddocker-keycloak -Dtest-dynamodb -Dtest-mysql -Dtest-vault -Dtest-neo4j -Dnative-image.xmx=6g -Dnative -Dno-format install"
   JVM_TEST_MAVEN_OPTS: "-e -B --settings azure-mvn-settings.xml -Dtest-postgresql -Dtest-elasticsearch -Dtest-mysql -Dtest-dynamodb -Dtest-vault -Dtest-neo4j -Dno-format"
   DB_USER: hibernate_orm_test
