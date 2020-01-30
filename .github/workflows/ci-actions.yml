@@ -77,7 +77,7 @@ jobs:
           docker run --rm --publish 3306:3306 --name build-mysql -e MYSQL_USER=$DB_USER -e MYSQL_PASSWORD=$DB_PASSWORD -e MYSQL_DATABASE=$DB_NAME -e MYSQL_RANDOM_ROOT_PASSWORD=true -e MYSQL_DATABASE=hibernate_orm_test -d mysql:5 --skip-ssl
       - uses: actions/checkout@v2
       - name: Set up JDK 1.8
-        uses: joschi/setup-jdk@1
+        uses: joschi/setup-jdk@v1
         with:
           java-version: openjdk8
       - name: Download Maven Repo
