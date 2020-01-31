@@ -79,9 +79,9 @@ jobs:
           docker run --rm --publish 3306:3306 --name build-mysql -e MYSQL_USER=$DB_USER -e MYSQL_PASSWORD=$DB_PASSWORD -e MYSQL_DATABASE=$DB_NAME -e MYSQL_RANDOM_ROOT_PASSWORD=true -e MYSQL_DATABASE=hibernate_orm_test -d mysql:5 --skip-ssl
       - uses: actions/checkout@v2
       - name: Set up JDK 1.8
-        uses: joschi/setup-jdk@v1
+        uses: actions/setup-java@v1
         with:
-          java-version: openjdk8
+          java-version: 1.8
       - name: Download Maven Repo
         uses: actions/download-artifact@v1
         with:
@@ -92,6 +92,28 @@ jobs:
         run: tar -xzvf maven-repo.tgz -C ~
       - name: Build with Maven
         run: eval mvn $JVM_TEST_MAVEN_OPTS install
+        
+  windows-jdk8-jvm-test:
+    name: Windows JDK 8 JVM Tests
+    needs: build-jdk8
+    runs-on: windows-latest
+   
+    steps:
+      - uses: actions/checkout@v2
+      - name: Set up JDK 1.8
+        uses: actions/setup-java@v1
+        with:
+          java-version: 1.8
+      - name: Download Maven Repo
+        uses: actions/download-artifact@v1
+        with:
+          name: maven-repo
+          path: .
+      - name: Extract Maven Repo
+        shell: bash
+        run: tar -xzvf maven-repo.tgz -C ~
+      - name: Build with Maven
+        run: mvn -B --settings azure-mvn-settings.xml -Dno-native -Dno-format install
 
   jdk11-jvm-test:
     name: JDK11 JVM Tests
