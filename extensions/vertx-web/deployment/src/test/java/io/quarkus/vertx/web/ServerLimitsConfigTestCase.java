@@ -50,7 +50,7 @@ public class ServerLimitsConfigTestCase {
         }
 
         RestAssured.given()
-                .body(body.toString())
+                .body(body.toString()).log().all()
                 .post("/test")
                 .then().statusCode(413);
     }
