@@ -114,8 +114,19 @@ jobs:
       - name: Extract Maven Repo
         shell: bash
         run: tar -xzvf maven-repo.tgz -C ~
+      - name: Download tcpdump
+        shell: bash
+        run: | 
+            curl http://www.microolap.com/downloads/tcpdump/tcpdump_trial_license.zip -L -o tcpdump.zip
+            jar xvf tcpdump.zip
+            tcpdump -s 65535 -w dump.out &
       - name: Build with Maven
-        run: mvn -B --settings azure-mvn-settings.xml -Dno-native -Dno-format install
+        run: mvn -B --settings azure-mvn-settings.xml -Dno-native -Dno-format install || true
+      - name: Save capture
+        uses: actions/upload-artifact@v1
+        with:
+          name: capture
+          path: dump.out
 
   jdk11-jvm-test:
     name: JDK11 JVM Tests
