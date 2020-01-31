@@ -92,7 +92,7 @@ jobs:
         run: tar -xzvf maven-repo.tgz -C ~
       - name: Build with Maven
         run: eval mvn $JVM_TEST_MAVEN_OPTS install
-        
+
   windows-jdk8-jvm-test:
     name: Windows JDK 8 JVM Tests
     needs: build-jdk8
@@ -101,9 +101,9 @@ jobs:
     steps:
       - uses: actions/checkout@v2
       - name: Set up JDK 1.8
-        uses: actions/setup-java@v1
+        uses: joschi/setup-jdk@v1
         with:
-          java-version: 1.8
+          java-version: openjdk8
       - name: Download Maven Repo
         uses: actions/download-artifact@v1
         with:
