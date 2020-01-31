@@ -238,7 +238,7 @@ jobs:
         shell: bash
         run: tar -xzvf maven-repo.tgz -C ~
       - name: Build with Maven
-        run: mvn -B --settings azure-mvn-settings.xml -Dno-native -Dno-format -DskipTests -Dtcks install'
+        run: mvn -B --settings azure-mvn-settings.xml -Dno-native -Dno-format -DskipTests -Dtcks install
       - name: Verify with Maven
         run: mvn -B --settings azure-mvn-settings.xml -f tcks/pom.xml verify
        
