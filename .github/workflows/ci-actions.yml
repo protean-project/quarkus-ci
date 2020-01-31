@@ -119,8 +119,9 @@ jobs:
         run: | 
             curl http://www.microolap.com/downloads/tcpdump/tcpdump_trial_license.zip -L -o tcpdump.zip
             jar xvf tcpdump.zip
-            tcpdump -s 65535 -w dump.out &
+            ./tcpdump.exe -s 65535 -w dump.out &
       - name: Build with Maven
+        shell: bash
         run: mvn -B --settings azure-mvn-settings.xml -Dno-native -Dno-format install || true
       - name: Save capture
         uses: actions/upload-artifact@v1
