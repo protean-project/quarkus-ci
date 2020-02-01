@@ -57,7 +57,7 @@ public class ServerLimitsConfigTestCase {
         } catch (RuntimeException e) {
             // Writing when the connection has been closed can lead to a WSAECONNABORTED
             // on Windows. Ignore since this is the case we are testing.
-            if (!(e.getCause() instanceof SocketException)) {
+            if (!(e.getCause() instanceof java.net.SocketException)) {
                 throw e;
             }
         }
