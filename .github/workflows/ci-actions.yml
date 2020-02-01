@@ -98,7 +98,7 @@ jobs:
     needs: build-jdk8
     runs-on: windows-latest
     env:
-      MAVEN_OPTS: -Xmx2048m
+      MAVEN_OPTS: -Xmx1G
    
     steps:
       - uses: actions/checkout@v2
