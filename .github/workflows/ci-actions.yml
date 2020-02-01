@@ -97,8 +97,8 @@ jobs:
     name: Windows JDK 8 JVM Tests
     needs: build-jdk8
     runs-on: windows-latest
-    env:
-      MAVEN_OPTS: -Xmx3072m
+#    env:
+#      MAVEN_OPTS: -Xmx3072m
    
     steps:
       - uses: actions/checkout@v2
