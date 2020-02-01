@@ -49,10 +49,18 @@ public class ServerLimitsConfigTestCase {
             body.append("q");
         }
 
-        RestAssured.given()
-                .body(body.toString()).log().all()
-                .post("/test")
-                .then().statusCode(413).log().all();
+        try {
+            RestAssured.given()
+                    .body(body.toString())
+                    .post("/test")
+                    .then().statusCode(413);
+        } catch (RuntimeException e) {
+            // Writing when the connection has been closed can lead to a WSAECONNABORTED
+            // on Windows. Ignore since this is the case we are testing.
+            if (!(e.getCause() instanceof SocketException)) {
+                throw e;
+            }
+        }
     }
 
     @Test
