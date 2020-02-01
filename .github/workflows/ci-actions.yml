@@ -116,7 +116,7 @@ jobs:
         run: tar -xzvf maven-repo.tgz -C ~
       - name: Build with Maven
         shell: bash
-        run: mvn -B --settings azure-mvn-settings.xml -Dno-native -Dno-format install 
+        run: mvn -B --settings azure-mvn-settings.xml -Dno-native -Dno-format -rf :quarkus-vertx-web-deployment install 
 
   jdk11-jvm-test:
     name: JDK11 JVM Tests
