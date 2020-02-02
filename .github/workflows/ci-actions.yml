@@ -1,6 +1,6 @@
 name: Java CI
 
-# TODO - Switch to schedule instead of push
+# TODO - Switch to schedule instead of push -
 on: [push, pull_request]
 
 env:
