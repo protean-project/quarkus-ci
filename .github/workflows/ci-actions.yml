@@ -99,7 +99,7 @@ jobs:
     needs: build-jdk8
     runs-on: windows-latest
     env:
-      MAVEN_OPTS: -Xmx1G
+      MAVEN_OPTS: -Xmx1280m
    
     steps:
       - uses: actions/checkout@v2
@@ -117,7 +117,7 @@ jobs:
         run: tar -xzvf maven-repo.tgz -C ~
       - name: Build with Maven
         shell: bash
-        run: mvn -B --settings azure-mvn-settings.xml -Dno-native -Dno-format -rf :quarkus-integration-test-scala install 
+        run: mvn -B --settings azure-mvn-settings.xml -Dno-native -Dno-format install 
 
   jdk11-jvm-test:
     name: JDK11 JVM Tests
