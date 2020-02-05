@@ -15,4 +15,5 @@ jobs:
       - name: Test find
         shell: bash
         run: |
-           find . -type d -name *va 
+           find --version
+           find . -type d -name \*va 
