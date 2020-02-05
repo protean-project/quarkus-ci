@@ -1,7 +1,7 @@
 name: Java CI
 
 # TODO - Switch to schedule instead of push
-on: [pull_request]
+on: [push, pull_request]
 
 env:
   # Workaround testsuite locale issue
@@ -134,7 +134,9 @@ jobs:
       - name: Prepare failure archive (if maven failed)
         if: failure()
         shell: bash
-        run: find . -name '*-reports' -type d | tar -czvf test-reports.tgz -T - 
+        run: |
+          # Disambiguate windows find from cygwin find
+          /usr/bin/find . -name '*-reports' -type d | tar -czvf test-reports.tgz -T - 
       - name: Upload failure Archive (if maven failed)
         uses: actions/upload-artifact@v1
         if: failure()
