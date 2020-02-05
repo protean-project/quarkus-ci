@@ -102,12 +102,14 @@ jobs:
         run: |
           echo "::set-env name=FAILURE_REPORT::true"
       - name: If failed, Prepare report archive
-        if: env.FAILURE_REPORT == true
+        #if: env.FAILURE_REPORT == true
+        if: failure()
         shell: bash
         run: find . -name '*-reports' -type d | tar -czvf test-reports.tgz -T - 
       - name: Failure, Upoading Report
         uses: actions/upload-artifact@v1
-        if: env.FAILURE_REPORT == true
+        if: failure()
+        #if: env.FAILURE_REPORT == true
         with:
           name: test-reports
           path: 'test-reports.tgz'
