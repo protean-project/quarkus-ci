@@ -49,15 +49,12 @@ jobs:
           find ~/.m2/repositoiry/io/quarkus/ -mindepth 1 -maxdepth 1 \( ! -name http -a ! -name gizmo -a ! -name security \) -exec echo {} \; -exec rm -rf {} \; || true
 
   linux-jvm-test:
-    env:
-      openjdk8: "8"
-      openjdk11: "11"
-      openjdk12: "12"
-    name: JDK ${{env[matrix.java-version]}} JVM Tests
+   
+    name: JDK ${{matrix.java-version}} JVM Tests
     needs: build-jdk8
     strategy:
       matrix:
-        java-version: [openjdk8, openjdk11, openjdk12]
+        java-version: [8, 11, 12]
 
     runs-on: ubuntu-latest
 
@@ -90,10 +87,10 @@ jobs:
           sudo service mysql stop || true
           docker run --rm --publish 3306:3306 --name build-mysql -e MYSQL_USER=$DB_USER -e MYSQL_PASSWORD=$DB_PASSWORD -e MYSQL_DATABASE=$DB_NAME -e MYSQL_RANDOM_ROOT_PASSWORD=true -e MYSQL_DATABASE=hibernate_orm_test -d mysql:5 --skip-ssl
       - uses: actions/checkout@v2
-      - name: Set up JDK = ${{ matrix.java-version }}
+      - name: Set up JDK ${{ matrix.java-version }}
         uses: joschi/setup-jdk@v1
         with:
-          java-version: ${{ matrix.java-version }}
+          java-version: openjdk${{ matrix.java-version }}
       - name: Download Maven Repo
         uses: actions/download-artifact@v1
         with:
