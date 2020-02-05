@@ -6,7 +6,6 @@ on: [push, pull_request]
 jobs:
   windows-jdk8-jvm-test:
     name: Windows JDK 8 JVM Tests
-    needs: build-jdk8
     runs-on: windows-latest
     env:
       MAVEN_OPTS: -Xmx1280m
