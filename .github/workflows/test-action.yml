@@ -3,7 +3,6 @@ name: Test Action
 # TODO - Switch to schedule instead of push
 on: [push, pull_request]
 
-env:
 jobs:
   windows-jdk8-jvm-test:
     name: Windows JDK 8 JVM Tests
