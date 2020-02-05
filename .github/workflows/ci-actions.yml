@@ -96,12 +96,15 @@ jobs:
         run: tar -xzvf maven-repo.tgz -C ~
       - name: Build with Maven
         run: eval mvn $JVM_TEST_MAVEN_OPTS -pl integration-tests/main install && bash -c 'exit 5'
-      - name: Failure, Creating Report
+      - name: Check failure
         if: failure()
         shell: bash
         run: |
-          find . -name '*-reports' -type d | tar -czvf test-reports.tgz -T - 
           echo "::set-env name=FAILURE_REPORT::true"
+      - name: If failed, Prepare report archive
+        if: env.FAILURE_REPORT
+        shell: bash
+        run: find . -name '*-reports' -type d | tar -czvf test-reports.tgz -T - 
       - name: Failure, Upoading Report
         uses: actions/upload-artifact@v1
         if: env.FAILURE_REPORT
