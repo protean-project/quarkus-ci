@@ -36,6 +36,8 @@ jobs:
       - name: Build
         run: |
           echo ${{env[join('restore_key_', github.event_name)]}}
+          echo ${{join('restore_key_', github.event_name)}}
+
           mvn -e -B  -DskipTests=true -Dno-format -DskipDocs clean install
       - name: Tar Maven Repo
         shell: bash
