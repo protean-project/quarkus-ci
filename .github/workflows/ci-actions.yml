@@ -10,7 +10,6 @@ env:
   DB_USER: hibernate_orm_test
   DB_PASSWORD: hibernate_orm_test
   DB_NAME: hibernate_orm_test
-  restore_key_pull_request: q2maven-
 jobs:
   build-jdk8:
     name: "JDK 8 Build"
@@ -24,6 +23,10 @@ jobs:
         uses: actions/setup-java@v1
         with:
           java-version: 1.8
+      - name: Compute cache restore key
+        run: |
+           # Always recompute on a push so that the maven repo doesnt grow indefinitely with old versions
+           ${{ github.event_name == 'pull_request' }} && echo "::set-env name=COMPUTED_RESTORE_KEY::q2maven-"
       - name: Cache Maven Repository
         id: cache-maven
         uses: n1hility/cache@v2
@@ -31,13 +34,8 @@ jobs:
           path: ~/.m2/repository
           # Improves the reusability of the cache to limit key changes
           key: q2maven-${{ hashFiles('bom/runtime/pom.xml') }}
-          restore-keys: ${{env[join('restore_key_', github.event_name)]}}
+          restore-keys: ${{ env.COMPUTED_RESTORE_KEY }}
           restore-only: ${{ github.event_name == 'pull_request' }}
-      - name: Debug
-        run: |
-          echo ${{env[join('restore_key_', github.event_name)]}}
-          echo ${{join('restore_key_', github.event_name)}}
-          echo ${{github.event_name}}
       - name: Build
         run: |
           mvn -e -B  -DskipTests=true -Dno-format -DskipDocs clean install
