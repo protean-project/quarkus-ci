@@ -32,10 +32,3 @@ _All under ONE framework._
 ## How to build Quarkus
 
 The build instructions are available in the [contribution guide](CONTRIBUTING.md).
-
-
-bogus
-bogus
-bogus
-bogus
-bogus
