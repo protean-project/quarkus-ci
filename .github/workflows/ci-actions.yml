@@ -199,6 +199,16 @@ jobs:
         run: mvn -B --settings azure-mvn-settings.xml -Dno-native -Dno-format -DskipTests -Dtcks install
       - name: Verify with Maven
         run: mvn -B --settings azure-mvn-settings.xml -f tcks/pom.xml verify
+      - name: Prepare failure archive (if maven failed)
+        if: failure()
+        shell: bash
+        run: find . -name '*-reports' -type d | tar -czvf test-reports.tgz -T - 
+      - name: Upload failure Archive (if maven failed)
+        uses: actions/upload-artifact@v1
+        if: failure()
+        with:
+          name: test-reports
+          path: 'test-reports.tgz'
        
   native-main:
     name: Native Tests - Main
@@ -230,6 +240,16 @@ jobs:
         run: tar -xzvf maven-repo.tgz -C ~
       - name: Build with Maven
         run: eval mvn -pl integration-tests/main $NATIVE_TEST_MAVEN_OPTS
+      - name: Prepare failure archive (if maven failed)
+        if: failure()
+        shell: bash
+        run: find . -name '*-reports' -type d | tar -czvf test-reports.tgz -T - 
+      - name: Upload failure Archive (if maven failed)
+        uses: actions/upload-artifact@v1
+        if: failure()
+        with:
+          name: test-reports
+          path: 'test-reports.tgz'
 
   native-data1:
     name: Native Tests - Data1
@@ -261,6 +281,16 @@ jobs:
           do modules+=("integration-tests/$i"); done
           IFS=,
           eval mvn -pl "${modules[*]}" $NATIVE_TEST_MAVEN_OPTS
+      - name: Prepare failure archive (if maven failed)
+        if: failure()
+        shell: bash
+        run: find . -name '*-reports' -type d | tar -czvf test-reports.tgz -T - 
+      - name: Upload failure Archive (if maven failed)
+        uses: actions/upload-artifact@v1
+        if: failure()
+        with:
+          name: test-reports
+          path: 'test-reports.tgz'
 
   native-data2:
     name: Native Tests - Data2
@@ -306,6 +336,16 @@ jobs:
           do modules+=("integration-tests/$i"); done
           IFS=,
           eval mvn -pl "${modules[*]}" $NATIVE_TEST_MAVEN_OPTS
+      - name: Prepare failure archive (if maven failed)
+        if: failure()
+        shell: bash
+        run: find . -name '*-reports' -type d | tar -czvf test-reports.tgz -T - 
+      - name: Upload failure Archive (if maven failed)
+        uses: actions/upload-artifact@v1
+        if: failure()
+        with:
+          name: test-reports
+          path: 'test-reports.tgz'
   
   native-data3:
     name: Native Tests - Data3
@@ -345,6 +385,17 @@ jobs:
           do modules+=("integration-tests/$i"); done
           IFS=,
           eval mvn -pl "${modules[*]}" $NATIVE_TEST_MAVEN_OPTS
+      - name: Prepare failure archive (if maven failed)
+        if: failure()
+        shell: bash
+        run: find . -name '*-reports' -type d | tar -czvf test-reports.tgz -T - 
+      - name: Upload failure Archive (if maven failed)
+        uses: actions/upload-artifact@v1
+        if: failure()
+        with:
+          name: test-reports
+          path: 'test-reports.tgz'
+
   
   native-data4:
     name: Native Tests - Data4
@@ -384,6 +435,17 @@ jobs:
           do modules+=("integration-tests/$i"); done
           IFS=,
           eval mvn -pl "${modules[*]}" $NATIVE_TEST_MAVEN_OPTS
+      - name: Prepare failure archive (if maven failed)
+        if: failure()
+        shell: bash
+        run: find . -name '*-reports' -type d | tar -czvf test-reports.tgz -T - 
+      - name: Upload failure Archive (if maven failed)
+        uses: actions/upload-artifact@v1
+        if: failure()
+        with:
+          name: test-reports
+          path: 'test-reports.tgz'
+
   
   native-amazon:
     name: Native Tests - Amazon
@@ -419,6 +481,16 @@ jobs:
           do modules+=("integration-tests/$i"); done
           IFS=,
           eval mvn -pl "${modules[*]}" $NATIVE_TEST_MAVEN_OPTS
+      - name: Prepare failure archive (if maven failed)
+        if: failure()
+        shell: bash
+        run: find . -name '*-reports' -type d | tar -czvf test-reports.tgz -T - 
+      - name: Upload failure Archive (if maven failed)
+        uses: actions/upload-artifact@v1
+        if: failure()
+        with:
+          name: test-reports
+          path: 'test-reports.tgz'
 
   native-messaging:
     name: Native Tests - Messaging
@@ -449,6 +521,16 @@ jobs:
           do modules+=("integration-tests/$i"); done
           IFS=,
           eval mvn -pl "${modules[*]}" $NATIVE_TEST_MAVEN_OPTS
+      - name: Prepare failure archive (if maven failed)
+        if: failure()
+        shell: bash
+        run: find . -name '*-reports' -type d | tar -czvf test-reports.tgz -T - 
+      - name: Upload failure Archive (if maven failed)
+        uses: actions/upload-artifact@v1
+        if: failure()
+        with:
+          name: test-reports
+          path: 'test-reports.tgz'
 
   native-security1:
     name: Native Tests - Security 1
@@ -489,6 +571,16 @@ jobs:
           do modules+=("integration-tests/$i"); done
           IFS=,
           eval mvn -pl "${modules[*]}" $NATIVE_TEST_MAVEN_OPTS
+      - name: Prepare failure archive (if maven failed)
+        if: failure()
+        shell: bash
+        run: find . -name '*-reports' -type d | tar -czvf test-reports.tgz -T - 
+      - name: Upload failure Archive (if maven failed)
+        uses: actions/upload-artifact@v1
+        if: failure()
+        with:
+          name: test-reports
+          path: 'test-reports.tgz'
 
   native-security2:
     name: Native Tests - Security 2
@@ -531,6 +623,16 @@ jobs:
           do modules+=("integration-tests/$i"); done
           IFS=,
           eval mvn -pl "${modules[*]}" $NATIVE_TEST_MAVEN_OPTS
+      - name: Prepare failure archive (if maven failed)
+        if: failure()
+        shell: bash
+        run: find . -name '*-reports' -type d | tar -czvf test-reports.tgz -T - 
+      - name: Upload failure Archive (if maven failed)
+        uses: actions/upload-artifact@v1
+        if: failure()
+        with:
+          name: test-reports
+          path: 'test-reports.tgz'
 
   native-cache:
     name: Native Tests - Cache
@@ -561,6 +663,16 @@ jobs:
           do modules+=("integration-tests/$i"); done
           IFS=,
           eval mvn -pl "${modules[*]}" $NATIVE_TEST_MAVEN_OPTS
+      - name: Prepare failure archive (if maven failed)
+        if: failure()
+        shell: bash
+        run: find . -name '*-reports' -type d | tar -czvf test-reports.tgz -T - 
+      - name: Upload failure Archive (if maven failed)
+        uses: actions/upload-artifact@v1
+        if: failure()
+        with:
+          name: test-reports
+          path: 'test-reports.tgz'
 
   native-http:
     name: Native Tests - HTTP
@@ -592,6 +704,16 @@ jobs:
           do modules+=("integration-tests/$i"); done
           IFS=,
           eval mvn -pl "${modules[*]}" $NATIVE_TEST_MAVEN_OPTS
+      - name: Prepare failure archive (if maven failed)
+        if: failure()
+        shell: bash
+        run: find . -name '*-reports' -type d | tar -czvf test-reports.tgz -T - 
+      - name: Upload failure Archive (if maven failed)
+        uses: actions/upload-artifact@v1
+        if: failure()
+        with:
+          name: test-reports
+          path: 'test-reports.tgz'
   
   native-misc1:
     name: Native Tests - Misc 1
@@ -623,6 +745,16 @@ jobs:
           do modules+=("integration-tests/$i"); done
           IFS=,
           eval mvn -pl "${modules[*]}" $NATIVE_TEST_MAVEN_OPTS
+      - name: Prepare failure archive (if maven failed)
+        if: failure()
+        shell: bash
+        run: find . -name '*-reports' -type d | tar -czvf test-reports.tgz -T - 
+      - name: Upload failure Archive (if maven failed)
+        uses: actions/upload-artifact@v1
+        if: failure()
+        with:
+          name: test-reports
+          path: 'test-reports.tgz'
 
   native-misc2:
     name: Native Tests - Misc 2
@@ -653,6 +785,16 @@ jobs:
           do modules+=("integration-tests/$i"); done
           IFS=,
           eval mvn -pl "${modules[*]}" $NATIVE_TEST_MAVEN_OPTS
+      - name: Prepare failure archive (if maven failed)
+        if: failure()
+        shell: bash
+        run: find . -name '*-reports' -type d | tar -czvf test-reports.tgz -T - 
+      - name: Upload failure Archive (if maven failed)
+        uses: actions/upload-artifact@v1
+        if: failure()
+        with:
+          name: test-reports
+          path: 'test-reports.tgz'
 
   native-misc3:
     name: Native Tests - Misc 3
@@ -682,6 +824,16 @@ jobs:
           do modules+=("integration-tests/$i"); done
           IFS=,
           eval mvn -pl "${modules[*]}" $NATIVE_TEST_MAVEN_OPTS
+      - name: Prepare failure archive (if maven failed)
+        if: failure()
+        shell: bash
+        run: find . -name '*-reports' -type d | tar -czvf test-reports.tgz -T - 
+      - name: Upload failure Archive (if maven failed)
+        uses: actions/upload-artifact@v1
+        if: failure()
+        with:
+          name: test-reports
+          path: 'test-reports.tgz'
 
   native-spring:
     name: Native Tests - Spring
@@ -712,6 +864,17 @@ jobs:
           do modules+=("integration-tests/$i"); done
           IFS=,
           eval mvn -pl "${modules[*]}" $NATIVE_TEST_MAVEN_OPTS
+      - name: Prepare failure archive (if maven failed)
+        if: failure()
+        shell: bash
+        run: find . -name '*-reports' -type d | tar -czvf test-reports.tgz -T - 
+      - name: Upload failure Archive (if maven failed)
+        uses: actions/upload-artifact@v1
+        if: failure()
+        with:
+          name: test-reports
+          path: 'test-reports.tgz'
+
   native-data5:
     name: Native Tests - Data 5
     needs: build-jdk8
@@ -740,3 +903,14 @@ jobs:
           do modules+=("integration-tests/$i"); done
           IFS=,
           eval mvn -pl "${modules[*]}" $NATIVE_TEST_MAVEN_OPTS
+      - name: Prepare failure archive (if maven failed)
+        if: failure()
+        shell: bash
+        run: find . -name '*-reports' -type d | tar -czvf test-reports.tgz -T - 
+      - name: Upload failure Archive (if maven failed)
+        uses: actions/upload-artifact@v1
+        if: failure()
+        with:
+          name: test-reports
+          path: 'test-reports.tgz'
+
