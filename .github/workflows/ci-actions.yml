@@ -1,6 +1,5 @@
-name: Java CI
+name: Quarkus CI
 
-# TODO - Switch to schedule instead of push
 on: [push, pull_request]
 
 env:
@@ -913,4 +912,3 @@ jobs:
         with:
           name: test-reports
           path: 'test-reports.tgz'
-
