@@ -37,7 +37,7 @@ jobs:
         run: |
           echo ${{env[join('restore_key_', github.event_name)]}}
           echo ${{join('restore_key_', github.event_name)}}
-          echo ${{github.event_name)}}
+          echo ${{github.event_name}}
       - name: Build
         run: |
           mvn -e -B  -DskipTests=true -Dno-format -DskipDocs clean install
