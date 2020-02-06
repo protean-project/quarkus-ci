@@ -26,7 +26,7 @@ jobs:
       - name: Compute cache restore key
         run: |
            # Always recompute on a push so that the maven repo doesnt grow indefinitely with old versions
-           ${{ github.event_name == 'pull_request' }} && echo "::set-env name=COMPUTED_RESTORE_KEY::q2maven-"
+           if ${{ github.event_name == 'pull_request' }}; then "::set-env name=COMPUTED_RESTORE_KEY::q2maven-"; fi
       - name: Cache Maven Repository
         id: cache-maven
         uses: n1hility/cache@v2
