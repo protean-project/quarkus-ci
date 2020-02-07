@@ -64,6 +64,14 @@ jobs:
     runs-on: ubuntu-latest
 
     services:
+      keycloak:
+        image: quay.io/keycloak/keycloak:8.0.1
+        env:
+          KEYCLOAK_USER: admin
+          KEYCLOAK_PASSWORD: admin
+          JAVA_OPTS: "-server -Xms64m -Xmx512m -XX:MetaspaceSize=96M -XX:MaxMetaspaceSize=256m -Djava.net.preferIPv4Stack=true -Djava.awt.headless=true -Dkeycloak.profile.feature.upload_scripts=enabled"
+        ports:
+          - 8180:8080
       postgres:
         image: postgres:10.5
         env:
@@ -103,14 +111,7 @@ jobs:
         image: amazon/dynamodb-local:1.11.477
         ports:
           - 8000:8000
-      keycloak:
-        image: quay.io/keycloak/keycloak:8.0.1
-        env:
-          KEYCLOAK_USER: admin
-          KEYCLOAK_PASSWORD: admin
-          JAVA_OPTS: "-server -Xms64m -Xmx512m -XX:MetaspaceSize=96M -XX:MaxMetaspaceSize=256m -Djava.net.preferIPv4Stack=true -Djava.awt.headless=true -Dkeycloak.profile.feature.upload_scripts=enabled"
-        ports:
-          - 8180:8080
+
     
     steps:
       - name: Start mysql
