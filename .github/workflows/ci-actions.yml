@@ -103,14 +103,14 @@ jobs:
         image: amazon/dynamodb-local:1.11.477
         ports:
           - 8000:8000
-      # keycloak:
-      #   image: quay.io/keycloak/keycloak:8.0.1
-      #   env:
-      #     KEYCLOAK_USER: admin
-      #     KEYCLOAK_PASSWORD: admin
-      #     JAVA_OPTS: "-server -Xms64m -Xmx512m -XX:MetaspaceSize=96M -XX:MaxMetaspaceSize=256m -Djava.net.preferIPv4Stack=true -Djava.awt.headless=true -Dkeycloak.profile.feature.upload_scripts=enabled"
-      #   ports:
-      #     - 8180:8080
+      keycloak:
+        image: quay.io/keycloak/keycloak:8.0.1
+        env:
+          KEYCLOAK_USER: admin
+          KEYCLOAK_PASSWORD: admin
+          JAVA_OPTS: \"-server -Xms64m -Xmx512m -XX:MetaspaceSize=96M -XX:MaxMetaspaceSize=256m -Djava.net.preferIPv4Stack=true -Djava.awt.headless=true -Dkeycloak.profile.feature.upload_scripts=enabled\"
+        ports:
+          - 8180:8080
     steps:
       - name: Start mysql
         shell: bash
@@ -664,6 +664,7 @@ jobs:
           - 8180:8080
 
     steps:
+      - run: netstat -ln 
       - uses: actions/checkout@v2
       - name: Set up JDK 1.8
         uses: actions/setup-java@v1
