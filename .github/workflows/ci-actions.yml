@@ -103,21 +103,23 @@ jobs:
         image: amazon/dynamodb-local:1.11.477
         ports:
           - 8000:8000
-      keycloak:
-        image: quay.io/keycloak/keycloak:8.0.1
-        env:
-          KEYCLOAK_USER: admin
-          KEYCLOAK_PASSWORD: admin
-          JAVA_OPTS: "-server -Xms64m -Xmx512m -XX:MetaspaceSize=96M -XX:MaxMetaspaceSize=256m -Djava.net.preferIPv4Stack=true -Djava.awt.headless=true -Dkeycloak.profile.feature.upload_scripts=enabled"
-        ports:
-          - 8180:8080
+      # keycloak:
+      #   image: quay.io/keycloak/keycloak:8.0.1
+      #   env:
+      #     KEYCLOAK_USER: admin
+      #     KEYCLOAK_PASSWORD: admin
+      #     JAVA_OPTS: "-server -Xms64m -Xmx512m -XX:MetaspaceSize=96M -XX:MaxMetaspaceSize=256m -Djava.net.preferIPv4Stack=true -Djava.awt.headless=true -Dkeycloak.profile.feature.upload_scripts=enabled"
+      #   ports:
+      #     - 8180:8080
     steps:
       - name: Start mysql
         shell: bash
         run: |
           sudo service mysql stop || true
           docker run --rm --publish 3306:3306 --name build-mysql -e MYSQL_USER=$DB_USER -e MYSQL_PASSWORD=$DB_PASSWORD -e MYSQL_DATABASE=$DB_NAME -e MYSQL_RANDOM_ROOT_PASSWORD=true -e MYSQL_DATABASE=hibernate_orm_test -d mysql:5 --skip-ssl
-          netstat -ln
+      - name: Start keycloak
+        run: |
+          docker run --rm --publish 8180:8080 --name build-keycloak  -e KEYCLOAK_USER=admin -e KEYCLOAK_PASSWORD=admin -e JAVA_OPTS="-server -Xms64m -Xmx512m -XX:MetaspaceSize=96M -XX:MaxMetaspaceSize=256m -Djava.net.preferIPv4Stack=true -Djava.awt.headless=true -Dkeycloak.profile.feature.upload_scripts=enabled" -d quay.io/keycloak/keycloak:8.0.1
       - uses: actions/checkout@v2
       - name: Set up JDK ${{ matrix.java-version }}
         uses: joschi/setup-jdk@v1
