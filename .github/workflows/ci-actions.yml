@@ -78,6 +78,7 @@ jobs:
           MYSQL_USER: hibernate_orm_test
           MYSQL_PASSWORD: hibernate_orm_test
           MYSQL_DATABASE: hibernate_orm_test
+          MYSQL_RANDOM_ROOT_PASSWORD: true
         ports:
           - 3308:3306
       mssql:
@@ -298,6 +299,7 @@ jobs:
           MYSQL_USER: hibernate_orm_test
           MYSQL_PASSWORD: hibernate_orm_test
           MYSQL_DATABASE: hibernate_orm_test
+          MYSQL_RANDOM_ROOT_PASSWORD: true
         ports:
           - 3308:3306
       mssql:
