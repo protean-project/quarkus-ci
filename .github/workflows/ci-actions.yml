@@ -423,7 +423,7 @@ jobs:
         run: tar -xzvf maven-repo.tgz -C ~
       - name: Build with Maven
         env: 
-          TEST_MODULES: matrix.test-modules
+          TEST_MODULES: ${{matrix.test-modules}}
         run: |
           for i in $TEST_MODULES
           do modules+=("integration-tests/$i"); done
