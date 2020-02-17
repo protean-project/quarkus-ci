@@ -247,183 +247,167 @@ jobs:
           name: test-reports-tcks
           path: 'test-reports.tgz'
        
-  native-main:
-    name: Native Tests - Main
+  native-tests:
+    name: Native Tests - ${{matrix.module}}
     needs: build-jdk8
     runs-on: ubuntu-latest
-
-    services:
-      postgres:
-        image: postgres:10.5
-        env:
-          POSTGRES_USER: hibernate_orm_test
-          POSTGRES_PASSWORD: hibernate_orm_test
-          POSTGRES_DB: hibernate_orm_test
-        ports:
-          - 5432:5432
-    steps:
-      - uses: actions/checkout@v2
-      - name: Set up JDK 1.8
-        uses: actions/setup-java@v1
-        with:
-          java-version: 1.8
-      - name: Download Maven Repo
-        uses: actions/download-artifact@v1
-        with:
-          name: maven-repo
-          path: .
-      - name: Extract Maven Repo
-        shell: bash
-        run: tar -xzvf maven-repo.tgz -C ~
-      - name: Build with Maven
-        run: eval mvn -pl integration-tests/main $NATIVE_TEST_MAVEN_OPTS
-      - name: Prepare failure archive (if maven failed)
-        if: failure()
-        shell: bash
-        run: find . -name '*-reports' -type d | tar -czvf test-reports.tgz -T - 
-      - name: Upload failure Archive (if maven failed)
-        uses: actions/upload-artifact@v1
-        if: failure()
-        with:
-          name: test-reports-native-main
-          path: 'test-reports.tgz'
-
-  native-data1:
-    name: Native Tests - Data1
-    needs: build-jdk8
-    runs-on: ubuntu-latest
-    timeout-minutes: 40
-
-    services:
-      mariadb:
-        image: mariadb:10.4
-        env:
-          MYSQL_USER: hibernate_orm_test
-          MYSQL_PASSWORD: hibernate_orm_test
-          MYSQL_DATABASE: hibernate_orm_test
-          MYSQL_RANDOM_ROOT_PASSWORD: true
-        ports:
-          - 3308:3306
-      mssql:
-        image: microsoft/mssql-server-linux:2017-CU12
-        env:
-          ACCEPT_EULA: Y
-          SA_PASSWORD: ActuallyRequired11Complexity
-          MYSQL_USER: hibernate_orm_test
-          MYSQL_PASSWORD: hibernate_orm_test
-          MYSQL_DATABASE: hibernate_orm_test
-        ports:
-          - 1433:1433
-
-    steps:
-      - uses: actions/checkout@v2
-      - name: Set up JDK 1.8
-        uses: actions/setup-java@v1
-        with:
-          java-version: 1.8
-      - name: Download Maven Repo
-        uses: actions/download-artifact@v1
-        with:
-          name: maven-repo
-          path: .
-      - name: Extract Maven Repo
-        shell: bash
-        run: tar -xzvf maven-repo.tgz -C ~
-      - name: Build with Maven
-        run: |
-          for i in \
-            jpa-h2 \
-            jpa-mariadb \
-            jpa-mssql \
-            jpa-derby \
-            jpa-without-entity
-          do modules+=("integration-tests/$i"); done
-          IFS=,
-          eval mvn -pl "${modules[*]}" $NATIVE_TEST_MAVEN_OPTS
-      - name: Prepare failure archive (if maven failed)
-        if: failure()
-        shell: bash
-        run: find . -name '*-reports' -type d | tar -czvf test-reports.tgz -T - 
-      - name: Upload failure Archive (if maven failed)
-        uses: actions/upload-artifact@v1
-        if: failure()
-        with:
-          name: test-reports-native-data1
-          path: 'test-reports.tgz'
-
-  native-data2:
-    name: Native Tests - Data2
-    needs: build-jdk8
-    runs-on: ubuntu-latest
-    timeout-minutes: 25
-
-    services:
-      postgres:
-        image: postgres:10.5
-        env:
-          POSTGRES_USER: hibernate_orm_test
-          POSTGRES_PASSWORD: hibernate_orm_test
-          POSTGRES_DB: hibernate_orm_test
-        ports:
-          - 5432:5432
+    strategy:
+      fail-fast: true
+      matrix:
+        category: [main, data1, data2, data3, data4, data5, security1, security2, amazon, messaging, misc1, misc2, misc3, spring]
+        include:
+          - category: main
+            postgres: "true"
+            test-modules: main
+          - category: data1
+            mariadb: "true"
+            mssql: "true"
+            test-modules: >
+              jpa-h2
+              jpa-mariadb
+              jpa-mssql
+              jpa-derby
+              jpa-without-entity
+          - category: data2
+            mysql: "true"
+            postgres: "true"
+            test-modules: >
+              jpa
+              jpa-postgresql
+              jpa-mysql
+              reactive-mysql-client
+          - category: data3
+            postgres: "true"
+            test-modules: >
+              flyway
+              hibernate-orm-panache
+              reactive-pg-client 
+          - category: data4
+            neo4j: "true"
+            test-modules: >
+              mongodb-client
+              mongodb-panache
+              neo4j
+          - category: data5
+            test-modules:
+              hibernate-search-elasticsearch
+              narayana-stm
+              narayana-jta
+          - category: amazon
+            dynamodb: "true"
+            test-modules: >
+              amazon-dynamodb
+              amazon-lambda
+              amazon-lambda-http
+          - category: messaging
+            test-modules: >
+              artemis-core
+              artemis-jms
+              kafka
+              kafka-streams
+          - category: security1
+            keycloak: "true"
+            test-modules: >
+              elytron-security-oauth2
+              elytron-security
+              elytron-security-jdbc
+              elytron-undertow 
+          - category: security2
+            keycloak: "true"
+            test-modules: >
+              elytron-resteasy
+              oidc
+              oidc-code-flow
+              oidc-tenancy
+              vault-app
+              keycloak-authorization
+          - category: cache
+            test-modules: >
+              infinispan-cache-jpa
+              infinispan-client
+              infinispan-embedded
+              cache
+          - category: http
+            test-modules: >
+              resteasy-jackson
+              vertx
+              vertx-http
+              vertx-graphql
+              virtual-http
+          - category: misc1
+            test-modules: >
+              maven
+              jackson
+              jsonb
+              jsch
+              jgit
+          - category: misc2
+            test-modules: >
+              tika
+              hibernate-validator
+              test-extension
+              logging-gelf
+              bootstrap-config
+          - category: misc3
+            test-modules: >
+              kogito
+              kubernetes-client
+              quartz
+              qute
+          - category: spring
+            test-modules: >
+              spring-di
+              spring-web
+              spring-data-jpa
+              spring-boot-properties
+              spring-cloud-config-client
 
     steps:
-      - uses: actions/checkout@v2
-      - name: Set up JDK 1.8
-        uses: actions/setup-java@v1
-        with:
-          java-version: 1.8
-      - name: Download Maven Repo
-        uses: actions/download-artifact@v1
-        with:
-          name: maven-repo
-          path: .
-      - name: Extract Maven Repo
-        shell: bash
-        run: tar -xzvf maven-repo.tgz -C ~
-      - name: Start mysql
-        shell: bash
+      # These should be services, but services do not (yet) allow conditional execution
+      - name: Postgres Service
+        run: >
+              docker run --rm --publish 5432:5432 --name build-postgres 
+              -e POSTGRES_USER=$DB_USER -e POSTGRES_PASSWORD=$DB_PASSWORD -e POSTGRES_DB=$DB_NAME
+              -d postgres:10.5
+        if: matrix.postgres
+      - name: MySQL Service
         run: |
           sudo service mysql stop || true
-          docker run --rm --publish 3306:3306 --name build-mysql -e MYSQL_USER=$DB_USER -e MYSQL_PASSWORD=$DB_PASSWORD -e MYSQL_DATABASE=$DB_NAME -e MYSQL_RANDOM_ROOT_PASSWORD=true -e MYSQL_DATABASE=hibernate_orm_test -d mysql:5 --skip-ssl
-      - name: Build with Maven
-        run: |
-          for i in \
-            jpa \
-            jpa-postgresql \
-            jpa-mysql \
-            reactive-mysql-client
-          do modules+=("integration-tests/$i"); done
-          IFS=,
-          eval mvn -pl "${modules[*]}" $NATIVE_TEST_MAVEN_OPTS
-      - name: Prepare failure archive (if maven failed)
-        if: failure()
-        shell: bash
-        run: find . -name '*-reports' -type d | tar -czvf test-reports.tgz -T - 
-      - name: Upload failure Archive (if maven failed)
-        uses: actions/upload-artifact@v1
-        if: failure()
-        with:
-          name: test-reports-native-data2
-          path: 'test-reports.tgz'
-  
-  native-data3:
-    name: Native Tests - Data3
-    needs: build-jdk8
-    runs-on: ubuntu-latest
-    timeout-minutes: 30
-
-    services:
-      postgres:
-        image: postgres:10.5
-        env:
-          POSTGRES_USER: hibernate_orm_test
-          POSTGRES_PASSWORD: hibernate_orm_test
-          POSTGRES_DB: hibernate_orm_test
-        ports:
-          - 5432:5432
-
-    steps:
+          docker run --rm --publish 3306:3306 --name build-mysql  \
+            -e MYSQL_USER=$DB_USER -e MYSQL_PASSWORD=$DB_PASSWORD -e MYSQL_DATABASE=$DB_NAME -e MYSQL_RANDOM_ROOT_PASSWORD=true \
+            -d mysql:5 --skip-ssl
+        if: matrix.mysql
+      - name: Maria DB Service
+        run: >
+          docker run --rm --publish 3308:3306 --name build-mariadb
+            -e MYSQL_USER=$DB_USER -e MYSQL_PASSWORD=$DB_PASSWORD -e MYSQL_DATABASE=$DB_NAME -e MYSQL_RANDOM_ROOT_PASSWORD=true
+            -d mariadb:10.4
+      - name: MS-SQL Service
+        run: >
+          docker run --rm --publish 1433:1433 --name build-mssql
+            -e ACCEPT_EULA=Y -e SA_PASSWORD=ActuallyRequired11Complexity 
+            -d microsoft/mssql-server-linux:2017-CU12
+        if: matrix.mssql
+      - name: Dynamo DB Service
+        run: >
+          docker run --rm --publish 8000:8000 --name build-dynamodb
+            -d amazon/dynamodb-local:1.11.477
+        if: matrix.dynamodb
+      - name: Neo4j Service
+        run: >
+          docker run --rm --publish 7687:7687 --name build-neo4j 
+          -e NEO4J_AUTH=neo4j/secret -e NEO4J_dbms_memory_pagecache_size=10M -e NEO4J_dbms_memory_heap_initial__size=10M
+          -d neo4j/neo4j-experimental:4.0.0-
+        if: matrix.neo4j
+      - name: Keycloak Service
+        run: >
+          docker run --rm --publish 8180:8080 --name build-keycloak
+          -e KEYCLOAK_USER=admin -e KEYCLOAK_PASSWORD=admin -e JAVA_OPTS="
+             -server -Xms64m -Xmx512m -XX:MetaspaceSize=96M 
+             -XX:MaxMetaspaceSize=256m -Djava.net.preferIPv4Stack=true -Djava.awt.headless=true 
+             -Dkeycloak.profile.feature.upload_scripts=enabled" 
+          -d quay.io/keycloak/keycloak:8.0.1
+        if: matrix.keycloak
       - uses: actions/checkout@v2
       - name: Set up JDK 1.8
         uses: actions/setup-java@v1
@@ -438,11 +422,10 @@ jobs:
         shell: bash
         run: tar -xzvf maven-repo.tgz -C ~
       - name: Build with Maven
+        env: 
+          TEST_MODULES: matrix.test-modules
         run: |
-          for i in \
-            flyway \
-            hibernate-orm-panache \
-            reactive-pg-client 
+          for i in $TEST_MODULES
           do modules+=("integration-tests/$i"); done
           IFS=,
           eval mvn -pl "${modules[*]}" $NATIVE_TEST_MAVEN_OPTS
@@ -454,538 +437,5 @@ jobs:
         uses: actions/upload-artifact@v1
         if: failure()
         with:
-          name: test-reports-native-data3
-          path: 'test-reports.tgz'
-
-  
-  native-data4:
-    name: Native Tests - Data4
-    needs: build-jdk8
-    runs-on: ubuntu-latest
-    timeout-minutes: 30
-
-    services:
-      neo4j:
-        image: neo4j/neo4j-experimental:4.0.0-rc01
-        env:
-          NEO4J_AUTH: neo4j/secret
-          NEO4J_dbms_memory_pagecache_size: 10M 
-          NEO4J_dbms_memory_heap_initial__size: 10M
-        ports:
-          - 7687:7687
-
-    steps:
-      - uses: actions/checkout@v2
-      - name: Set up JDK 1.8
-        uses: actions/setup-java@v1
-        with:
-          java-version: 1.8
-      - name: Download Maven Repo
-        uses: actions/download-artifact@v1
-        with:
-          name: maven-repo
-          path: .
-      - name: Extract Maven Repo
-        shell: bash
-        run: tar -xzvf maven-repo.tgz -C ~
-      - name: Build with Maven
-        run: |
-          for i in \
-            mongodb-client \
-            mongodb-panache \
-            neo4j
-          do modules+=("integration-tests/$i"); done
-          IFS=,
-          eval mvn -pl "${modules[*]}" $NATIVE_TEST_MAVEN_OPTS
-      - name: Prepare failure archive (if maven failed)
-        if: failure()
-        shell: bash
-        run: find . -name '*-reports' -type d | tar -czvf test-reports.tgz -T - 
-      - name: Upload failure Archive (if maven failed)
-        uses: actions/upload-artifact@v1
-        if: failure()
-        with:
-          name: test-reports-native-data4
-          path: 'test-reports.tgz'
-
-  
-  native-amazon:
-    name: Native Tests - Amazon
-    needs: build-jdk8
-    runs-on: ubuntu-latest
-    timeout-minutes: 25
-
-    services:
-      dynamodb:
-        image: amazon/dynamodb-local:1.11.477
-        ports:
-          - 8000:8000
-
-    steps:
-      - uses: actions/checkout@v2
-      - name: Set up JDK 1.8
-        uses: actions/setup-java@v1
-        with:
-          java-version: 1.8
-      - name: Download Maven Repo
-        uses: actions/download-artifact@v1
-        with:
-          name: maven-repo
-          path: .
-      - name: Extract Maven Repo
-        shell: bash
-        run: tar -xzvf maven-repo.tgz -C ~
-      - name: Build with Maven
-        run: |
-          for i in \
-            amazon-dynamodb \
-            amazon-lambda \
-            amazon-lambda-http 
-          do modules+=("integration-tests/$i"); done
-          IFS=,
-          eval mvn -pl "${modules[*]}" $NATIVE_TEST_MAVEN_OPTS
-      - name: Prepare failure archive (if maven failed)
-        if: failure()
-        shell: bash
-        run: find . -name '*-reports' -type d | tar -czvf test-reports.tgz -T - 
-      - name: Upload failure Archive (if maven failed)
-        uses: actions/upload-artifact@v1
-        if: failure()
-        with:
-          name: test-reports-native-amazon
-          path: 'test-reports.tgz'
-
-  native-messaging:
-    name: Native Tests - Messaging
-    needs: build-jdk8
-    runs-on: ubuntu-latest
-    timeout-minutes: 30
-
-    steps:
-      - uses: actions/checkout@v2
-      - name: Set up JDK 1.8
-        uses: actions/setup-java@v1
-        with:
-          java-version: 1.8
-      - name: Download Maven Repo
-        uses: actions/download-artifact@v1
-        with:
-          name: maven-repo
-          path: .
-      - name: Extract Maven Repo
-        shell: bash
-        run: tar -xzvf maven-repo.tgz -C ~
-      - name: Build with Maven
-        run: |
-          for i in \
-            artemis-core \
-            artemis-jms \
-            kafka \
-            kafka-streams
-          do modules+=("integration-tests/$i"); done
-          IFS=,
-          eval mvn -pl "${modules[*]}" $NATIVE_TEST_MAVEN_OPTS
-      - name: Prepare failure archive (if maven failed)
-        if: failure()
-        shell: bash
-        run: find . -name '*-reports' -type d | tar -czvf test-reports.tgz -T - 
-      - name: Upload failure Archive (if maven failed)
-        uses: actions/upload-artifact@v1
-        if: failure()
-        with:
-          name: test-reports-native-messaging
-          path: 'test-reports.tgz'
-
-  native-security1:
-    name: Native Tests - Security 1
-    needs: build-jdk8
-    runs-on: ubuntu-latest
-    timeout-minutes: 20
-
-    services:
-      keycloak:
-        image: quay.io/keycloak/keycloak:8.0.1
-        env:
-          KEYCLOAK_USER: admin
-          KEYCLOAK_PASSWORD: admin
-          JAVA_OPTS: "-server -Xms64m -Xmx512m -XX:MetaspaceSize=96M -XX:MaxMetaspaceSize=256m -Djava.net.preferIPv4Stack=true -Djava.awt.headless=true -Dkeycloak.profile.feature.upload_scripts=enabled"
-        ports:
-          - 8180:8080
-
-    steps:
-      - uses: actions/checkout@v2
-      - name: Set up JDK 1.8
-        uses: actions/setup-java@v1
-        with:
-          java-version: 1.8
-      - name: Download Maven Repo
-        uses: actions/download-artifact@v1
-        with:
-          name: maven-repo
-          path: .
-      - name: Extract Maven Repo
-        shell: bash
-        run: tar -xzvf maven-repo.tgz -C ~
-      - name: Build with Maven
-        run: |
-          for i in \
-            elytron-security-oauth2 \
-            elytron-security \
-            elytron-security-jdbc \
-            elytron-undertow
-          do modules+=("integration-tests/$i"); done
-          IFS=,
-          eval mvn -pl "${modules[*]}" $NATIVE_TEST_MAVEN_OPTS
-      - name: Prepare failure archive (if maven failed)
-        if: failure()
-        shell: bash
-        run: find . -name '*-reports' -type d | tar -czvf test-reports.tgz -T - 
-      - name: Upload failure Archive (if maven failed)
-        uses: actions/upload-artifact@v1
-        if: failure()
-        with:
-          name: test-reports-native-security1
-          path: 'test-reports.tgz'
-
-  native-security2:
-    name: Native Tests - Security 2
-    needs: build-jdk8
-    runs-on: ubuntu-latest
-    timeout-minutes: 45
-
-    services:
-      keycloak:
-        image: quay.io/keycloak/keycloak:8.0.1
-        env:
-          KEYCLOAK_USER: admin
-          KEYCLOAK_PASSWORD: admin
-          JAVA_OPTS: "-server -Xms64m -Xmx512m -XX:MetaspaceSize=96M -XX:MaxMetaspaceSize=256m -Djava.net.preferIPv4Stack=true -Djava.awt.headless=true -Dkeycloak.profile.feature.upload_scripts=enabled"
-        ports:
-          - 8180:8080
-
-    steps:
-      - run: netstat -ln 
-      - uses: actions/checkout@v2
-      - name: Set up JDK 1.8
-        uses: actions/setup-java@v1
-        with:
-          java-version: 1.8
-      - name: Download Maven Repo
-        uses: actions/download-artifact@v1
-        with:
-          name: maven-repo
-          path: .
-      - name: Extract Maven Repo
-        shell: bash
-        run: tar -xzvf maven-repo.tgz -C ~
-      - name: Build with Maven
-        run: |
-          for i in \
-            elytron-resteasy \
-            oidc \
-            oidc-code-flow \
-            oidc-tenancy \
-            vault-app \
-            keycloak-authorization
-          do modules+=("integration-tests/$i"); done
-          IFS=,
-          eval mvn -pl "${modules[*]}" $NATIVE_TEST_MAVEN_OPTS
-      - name: Prepare failure archive (if maven failed)
-        if: failure()
-        shell: bash
-        run: find . -name '*-reports' -type d | tar -czvf test-reports.tgz -T - 
-      - name: Upload failure Archive (if maven failed)
-        uses: actions/upload-artifact@v1
-        if: failure()
-        with:
-          name: test-reports-native-security2
-          path: 'test-reports.tgz'
-
-  native-cache:
-    name: Native Tests - Cache
-    needs: build-jdk8
-    runs-on: ubuntu-latest
-    timeout-minutes: 30
-
-    steps:
-      - uses: actions/checkout@v2
-      - name: Set up JDK 1.8
-        uses: actions/setup-java@v1
-        with:
-          java-version: 1.8
-      - name: Download Maven Repo
-        uses: actions/download-artifact@v1
-        with:
-          name: maven-repo
-          path: .
-      - name: Extract Maven Repo
-        shell: bash
-        run: tar -xzvf maven-repo.tgz -C ~
-      - name: Build with Maven
-        run: |
-          for i in \
-            infinispan-cache-jpa \
-            infinispan-client \
-            infinispan-embedded \
-            cache
-          do modules+=("integration-tests/$i"); done
-          IFS=,
-          eval mvn -pl "${modules[*]}" $NATIVE_TEST_MAVEN_OPTS
-      - name: Prepare failure archive (if maven failed)
-        if: failure()
-        shell: bash
-        run: find . -name '*-reports' -type d | tar -czvf test-reports.tgz -T - 
-      - name: Upload failure Archive (if maven failed)
-        uses: actions/upload-artifact@v1
-        if: failure()
-        with:
-          name: test-reports-native-cache
-          path: 'test-reports.tgz'
-
-  native-http:
-    name: Native Tests - HTTP
-    needs: build-jdk8
-    runs-on: ubuntu-latest
-    timeout-minutes: 35
-
-    steps:
-      - uses: actions/checkout@v2
-      - name: Set up JDK 1.8
-        uses: actions/setup-java@v1
-        with:
-          java-version: 1.8
-      - name: Download Maven Repo
-        uses: actions/download-artifact@v1
-        with:
-          name: maven-repo
-          path: .
-      - name: Extract Maven Repo
-        shell: bash
-        run: tar -xzvf maven-repo.tgz -C ~
-      - name: Build with Maven
-        run: |
-          for i in \
-            resteasy-jackson \
-            vertx \
-            vertx-http \
-            vertx-graphql \
-            virtual-http 
-          do modules+=("integration-tests/$i"); done
-          IFS=,
-          eval mvn -pl "${modules[*]}" $NATIVE_TEST_MAVEN_OPTS
-      - name: Prepare failure archive (if maven failed)
-        if: failure()
-        shell: bash
-        run: find . -name '*-reports' -type d | tar -czvf test-reports.tgz -T - 
-      - name: Upload failure Archive (if maven failed)
-        uses: actions/upload-artifact@v1
-        if: failure()
-        with:
-          name: test-reports-native-http
-          path: 'test-reports.tgz'
-  
-  native-misc1:
-    name: Native Tests - Misc 1
-    needs: build-jdk8
-    runs-on: ubuntu-latest
-    timeout-minutes: 40
-
-    steps:
-      - uses: actions/checkout@v2
-      - name: Set up JDK 1.8
-        uses: actions/setup-java@v1
-        with:
-          java-version: 1.8
-      - name: Download Maven Repo
-        uses: actions/download-artifact@v1
-        with:
-          name: maven-repo
-          path: .
-      - name: Extract Maven Repo
-        shell: bash
-        run: tar -xzvf maven-repo.tgz -C ~
-      - name: Build with Maven
-        run: |
-          for i in \
-            maven \
-            jackson \
-            jsonb \
-            jsch \
-            jgit
-          do modules+=("integration-tests/$i"); done
-          IFS=,
-          eval mvn -pl "${modules[*]}" $NATIVE_TEST_MAVEN_OPTS
-      - name: Prepare failure archive (if maven failed)
-        if: failure()
-        shell: bash
-        run: find . -name '*-reports' -type d | tar -czvf test-reports.tgz -T - 
-      - name: Upload failure Archive (if maven failed)
-        uses: actions/upload-artifact@v1
-        if: failure()
-        with:
-          name: test-reports-native-misc1
-          path: 'test-reports.tgz'
-
-  native-misc2:
-    name: Native Tests - Misc 2
-    needs: build-jdk8
-    runs-on: ubuntu-latest
-    timeout-minutes: 30
-    
-    steps:
-      - uses: actions/checkout@v2
-      - name: Set up JDK 1.8
-        uses: actions/setup-java@v1
-        with:
-          java-version: 1.8
-      - name: Download Maven Repo
-        uses: actions/download-artifact@v1
-        with:
-          name: maven-repo
-          path: .
-      - name: Extract Maven Repo
-        shell: bash
-        run: tar -xzvf maven-repo.tgz -C ~
-      - name: Build with Maven
-        run: |
-          for i in \
-            tika \
-            hibernate-validator \
-            test-extension \
-            logging-gelf
-          do modules+=("integration-tests/$i"); done
-          IFS=,
-          eval mvn -pl "${modules[*]}" $NATIVE_TEST_MAVEN_OPTS
-      - name: Prepare failure archive (if maven failed)
-        if: failure()
-        shell: bash
-        run: find . -name '*-reports' -type d | tar -czvf test-reports.tgz -T - 
-      - name: Upload failure Archive (if maven failed)
-        uses: actions/upload-artifact@v1
-        if: failure()
-        with:
-          name: test-reports-native-misc2
-          path: 'test-reports.tgz'
-
-  native-misc3:
-    name: Native Tests - Misc 3
-    needs: build-jdk8
-    runs-on: ubuntu-latest
-    timeout-minutes: 35
-
-    steps:
-      - uses: actions/checkout@v2
-      - name: Set up JDK 1.8
-        uses: actions/setup-java@v1
-        with:
-          java-version: 1.8
-      - name: Download Maven Repo
-        uses: actions/download-artifact@v1
-        with:
-          name: maven-repo
-          path: .
-      - name: Extract Maven Repo
-        shell: bash
-        run: tar -xzvf maven-repo.tgz -C ~
-      - name: Build with Maven
-        run: |
-          for i in \
-            kogito \
-            kubernetes-client \
-            quartz \
-            qute
-          do modules+=("integration-tests/$i"); done
-          IFS=,
-          eval mvn -pl "${modules[*]}" $NATIVE_TEST_MAVEN_OPTS
-      - name: Prepare failure archive (if maven failed)
-        if: failure()
-        shell: bash
-        run: find . -name '*-reports' -type d | tar -czvf test-reports.tgz -T - 
-      - name: Upload failure Archive (if maven failed)
-        uses: actions/upload-artifact@v1
-        if: failure()
-        with:
-          name: test-reports-native-misc3
-          path: 'test-reports.tgz'
-
-  native-spring:
-    name: Native Tests - Spring
-    needs: build-jdk8
-    runs-on: ubuntu-latest
-    timeout-minutes: 30
-    
-    steps:
-      - uses: actions/checkout@v2
-      - name: Set up JDK 1.8
-        uses: actions/setup-java@v1
-        with:
-          java-version: 1.8
-      - name: Download Maven Repo
-        uses: actions/download-artifact@v1
-        with:
-          name: maven-repo
-          path: .
-      - name: Extract Maven Repo
-        shell: bash
-        run: tar -xzvf maven-repo.tgz -C ~
-      - name: Build with Maven
-        run: |
-          for i in \
-            spring-di \
-            spring-web \
-            spring-data-jpa \
-            spring-boot-properties \
-            spring-cloud-config-client
-          do modules+=("integration-tests/$i"); done
-          IFS=,
-          eval mvn -pl "${modules[*]}" $NATIVE_TEST_MAVEN_OPTS
-      - name: Prepare failure archive (if maven failed)
-        if: failure()
-        shell: bash
-        run: find . -name '*-reports' -type d | tar -czvf test-reports.tgz -T - 
-      - name: Upload failure Archive (if maven failed)
-        uses: actions/upload-artifact@v1
-        if: failure()
-        with:
-          name: test-reports-native-misc4
-          path: 'test-reports.tgz'
-
-  native-data5:
-    name: Native Tests - Data 5
-    needs: build-jdk8
-    runs-on: ubuntu-latest
-    timeout-minutes: 25
-    
-    steps:
-      - uses: actions/checkout@v2
-      - name: Set up JDK 1.8
-        uses: actions/setup-java@v1
-        with:
-          java-version: 1.8
-      - name: Download Maven Repo
-        uses: actions/download-artifact@v1
-        with:
-          name: maven-repo
-          path: .
-      - name: Extract Maven Repo
-        shell: bash
-        run: tar -xzvf maven-repo.tgz -C ~
-      - name: Build with Maven
-        run: |
-          for i in \
-            hibernate-search-elasticsearch \
-            narayana-stm \
-            narayana-jta
-          do modules+=("integration-tests/$i"); done
-          IFS=,
-          eval mvn -pl "${modules[*]}" $NATIVE_TEST_MAVEN_OPTS
-      - name: Prepare failure archive (if maven failed)
-        if: failure()
-        shell: bash
-        run: find . -name '*-reports' -type d | tar -czvf test-reports.tgz -T - 
-      - name: Upload failure Archive (if maven failed)
-        uses: actions/upload-artifact@v1
-        if: failure()
-        with:
-          name: test-reports-native-data5
+          name: test-reports-native-${{matrix.category}}
           path: 'test-reports.tgz'
