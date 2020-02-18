@@ -248,7 +248,7 @@ jobs:
           path: 'test-reports.tgz'
        
   native-tests:
-    name: Native Tests - ${{matrix.module}}
+    name: Native Tests - ${{matrix.category}}
     needs: build-jdk8
     runs-on: ubuntu-latest
     strategy:
