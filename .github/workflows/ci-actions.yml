@@ -254,12 +254,12 @@ jobs:
     strategy:
       fail-fast: true
       matrix:
-        category: [main, data1, data2, data3, data4, data5, security1, security2, amazon, messaging, misc1, misc2, misc3, spring]
+        category: [Main, Data1, Data2, Data3, Data4, Data5, Security1, Security2, Amazon, Messaging, Misc1, Misc2, Misc3, Spring]
         include:
-          - category: main
+          - category: Main
             postgres: "true"
             test-modules: main
-          - category: data1
+          - category: Data1
             mariadb: "true"
             mssql: "true"
             test-modules: >
@@ -268,7 +268,7 @@ jobs:
               jpa-mssql
               jpa-derby
               jpa-without-entity
-          - category: data2
+          - category: Data2
             mysql: "true"
             postgres: "true"
             test-modules: >
@@ -276,43 +276,43 @@ jobs:
               jpa-postgresql
               jpa-mysql
               reactive-mysql-client
-          - category: data3
+          - category: Data3
             postgres: "true"
             test-modules: >
               flyway
               hibernate-orm-panache
               reactive-pg-client 
-          - category: data4
+          - category: Data4
             neo4j: "true"
             test-modules: >
               mongodb-client
               mongodb-panache
               neo4j
-          - category: data5
+          - category: Data5
             test-modules: >
               hibernate-search-elasticsearch
               narayana-stm
               narayana-jta
-          - category: amazon
+          - category: Amazon
             dynamodb: "true"
             test-modules: >
               amazon-dynamodb
               amazon-lambda
               amazon-lambda-http
-          - category: messaging
+          - category: Messaging
             test-modules: >
               artemis-core
               artemis-jms
               kafka
               kafka-streams
-          - category: security1
+          - category: Security1
             keycloak: "true"
             test-modules: >
               elytron-security-oauth2
               elytron-security
               elytron-security-jdbc
               elytron-undertow 
-          - category: security2
+          - category: Security2
             keycloak: "true"
             test-modules: >
               elytron-resteasy
@@ -321,47 +321,46 @@ jobs:
               oidc-tenancy
               vault-app
               keycloak-authorization
-          - category: cache
+          - category: Cache
             test-modules: >
               infinispan-cache-jpa
               infinispan-client
               infinispan-embedded
               cache
-          - category: http
+          - category: HTTP
             test-modules: >
               resteasy-jackson
               vertx
               vertx-http
               vertx-graphql
               virtual-http
-          - category: misc1
+          - category: Misc1
             test-modules: >
               maven
               jackson
               jsonb
               jsch
               jgit
-          - category: misc2
+          - category: Misc2
             test-modules: >
               tika
               hibernate-validator
               test-extension
               logging-gelf
               bootstrap-config
-          - category: misc3
+          - category: Misc3
             test-modules: >
               kogito
               kubernetes-client
               quartz
               qute
-          - category: spring
+          - category: Spring
             test-modules: >
               spring-di
               spring-web
               spring-data-jpa
               spring-boot-properties
               spring-cloud-config-client
-
     steps:
       # These should be services, but services do not (yet) allow conditional execution
       - name: Postgres Service
@@ -396,17 +395,17 @@ jobs:
       - name: Neo4j Service
         run: |
           docker run --rm --publish 7687:7687 --name build-neo4j \
-          -e NEO4J_AUTH=neo4j/secret -e NEO4J_dbms_memory_pagecache_size=10M -e NEO4J_dbms_memory_heap_initial__size=10M \
-          -d neo4j/neo4j-experimental:4.0.0-rc01
+            -e NEO4J_AUTH=neo4j/secret -e NEO4J_dbms_memory_pagecache_size=10M -e NEO4J_dbms_memory_heap_initial__size=10M \
+            -d neo4j/neo4j-experimental:4.0.0-rc01
         if: matrix.neo4j
       - name: Keycloak Service
         run: |
           docker run --rm --publish 8180:8080 --name build-keycloak \
-          -e KEYCLOAK_USER=admin -e KEYCLOAK_PASSWORD=admin -e JAVA_OPTS=" \
-             -server -Xms64m -Xmx512m -XX:MetaspaceSize=96M \
-             -XX:MaxMetaspaceSize=256m -Djava.net.preferIPv4Stack=true -Djava.awt.headless=true \
-             -Dkeycloak.profile.feature.upload_scripts=enabled" \
-          -d quay.io/keycloak/keycloak:8.0.1
+            -e KEYCLOAK_USER=admin -e KEYCLOAK_PASSWORD=admin -e JAVA_OPTS=" \
+              -server -Xms64m -Xmx512m -XX:MetaspaceSize=96M \
+              -XX:MaxMetaspaceSize=256m -Djava.net.preferIPv4Stack=true -Djava.awt.headless=true \
+              -Dkeycloak.profile.feature.upload_scripts=enabled" \
+            -d quay.io/keycloak/keycloak:8.0.1
         if: matrix.keycloak
       - uses: actions/checkout@v2
       - name: Set up JDK 1.8
