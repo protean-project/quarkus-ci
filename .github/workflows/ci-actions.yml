@@ -252,7 +252,7 @@ jobs:
     needs: build-jdk8
     runs-on: ubuntu-latest
     # Ignore the following YAML Schema error 
-    timeout-minutes: ${{matrix.timeeout}}
+    timeout-minutes: ${{matrix.timeout}}
     strategy:
       fail-fast: true
       matrix:
