@@ -251,6 +251,8 @@ jobs:
     name: Native Tests - ${{matrix.category}}
     needs: build-jdk8
     runs-on: ubuntu-latest
+    # Ignore the following YAML Schema error 
+    timeout-minutes: ${{matrix.timeeout}}
     strategy:
       fail-fast: true
       matrix:
@@ -258,10 +260,12 @@ jobs:
         include:
           - category: Main
             postgres: "true"
+            timeout: 25
             test-modules: main
           - category: Data1
             mariadb: "true"
             mssql: "true"
+            timeout: 40
             test-modules: >
               jpa-h2
               jpa-mariadb
@@ -271,6 +275,7 @@ jobs:
           - category: Data2
             mysql: "true"
             postgres: "true"
+            timeout: 25
             test-modules: >
               jpa
               jpa-postgresql
@@ -278,34 +283,40 @@ jobs:
               reactive-mysql-client
           - category: Data3
             postgres: "true"
+            timeout: 30
             test-modules: >
               flyway
               hibernate-orm-panache
               reactive-pg-client 
           - category: Data4
             neo4j: "true"
+            timeout: 30
             test-modules: >
               mongodb-client
               mongodb-panache
               neo4j
           - category: Data5
+            timeout: 25
             test-modules: >
               hibernate-search-elasticsearch
               narayana-stm
               narayana-jta
           - category: Amazon
             dynamodb: "true"
+            timeout: 15
             test-modules: >
               amazon-dynamodb
               amazon-lambda
               amazon-lambda-http
           - category: Messaging
+            timeout: 30
             test-modules: >
               artemis-core
               artemis-jms
               kafka
               kafka-streams
           - category: Security1
+            timeout: 20
             keycloak: "true"
             test-modules: >
               elytron-security-oauth2
@@ -313,6 +324,7 @@ jobs:
               elytron-security-jdbc
               elytron-undertow 
           - category: Security2
+            timeout: 45
             keycloak: "true"
             test-modules: >
               elytron-resteasy
@@ -322,12 +334,14 @@ jobs:
               vault-app
               keycloak-authorization
           - category: Cache
+            timeout: 30
             test-modules: >
               infinispan-cache-jpa
               infinispan-client
               infinispan-embedded
               cache
           - category: HTTP
+            timeout: 35
             test-modules: >
               resteasy-jackson
               vertx
@@ -335,6 +349,7 @@ jobs:
               vertx-graphql
               virtual-http
           - category: Misc1
+            timeout: 40
             test-modules: >
               maven
               jackson
@@ -342,6 +357,7 @@ jobs:
               jsch
               jgit
           - category: Misc2
+            timeout: 35
             test-modules: >
               tika
               hibernate-validator
@@ -349,12 +365,14 @@ jobs:
               logging-gelf
               bootstrap-config
           - category: Misc3
+            timeout: 35
             test-modules: >
               kogito
               kubernetes-client
               quartz
               qute
           - category: Spring
+            timeout: 30
             test-modules: >
               spring-di
               spring-web
