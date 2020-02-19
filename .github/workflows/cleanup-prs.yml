@@ -1,0 +1,16 @@
+name: Cleanup Duplicate Quarkus PRS
+
+on:
+  schedule:
+    # * is a special character in YAML so you have to quote this string
+    - cron:  '*/5 * * * *'
+
+jobs:
+  cleanup-prs:
+    name: "Cleanup Duplicate PRs"
+    runs-on: ubuntu-latest
+    steps:
+      - uses: n1hility/cancel-previous-runs@master
+        with:
+          token: ${{ secrets.GITHUB_TOKEN }}
+          workflow: ci-actions.yml
