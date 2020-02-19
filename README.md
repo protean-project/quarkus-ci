@@ -33,10 +33,3 @@ _All under ONE framework._
 
 The build instructions are available in the [contribution guide](CONTRIBUTING.md).
 
-hrm2
-
-bogus
-bogus
-bogus
-bogus
-bogus
