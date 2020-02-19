@@ -5,6 +5,8 @@
 [![License](https://img.shields.io/github/license/quarkusio/quarkus?style=for-the-badge&logo=apache)](https://www.apache.org/licenses/LICENSE-2.0)
 [![Project Chat](https://img.shields.io/badge/zulip-join_chat-brightgreen.svg?style=for-the-badge&logo=zulip)](https://quarkusio.zulipchat.com/)
 
+other 
+
 # Quarkus - Supersonic Subatomic Java
 
 Quarkus is a Cloud Native, (Linux) Container First framework for writing Java applications.
