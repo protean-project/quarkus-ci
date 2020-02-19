@@ -14,6 +14,7 @@ jobs:
   build-jdk8:
     name: "JDK 8 Build"
     runs-on: ubuntu-latest
+    if: github.event.pull_request.draft == false
     steps:
       - uses: actions/checkout@v2
       - uses: n1hility/cancel-previous-runs@master
@@ -56,6 +57,7 @@ jobs:
   linux-jvm-tests:
     name: JDK ${{matrix.java-version}} JVM Tests
     needs: build-jdk8
+    if: github.event.pull_request.draft == false
     timeout-minutes: 120
     strategy:
       matrix:
@@ -150,6 +152,7 @@ jobs:
     name: Windows JDK 8 JVM Tests
     needs: build-jdk8
     runs-on: windows-latest
+    if: github.event.pull_request.draft == false
     timeout-minutes: 120
     env:
       MAVEN_OPTS: -Xmx1280m
@@ -189,6 +192,7 @@ jobs:
     name: TCKS Test
     needs: build-jdk8
     runs-on: ubuntu-latest
+    if: github.event.pull_request.draft == false
     timeout-minutes: 120
 
     services:
@@ -252,6 +256,7 @@ jobs:
     name: Native Tests - ${{matrix.category}}
     needs: build-jdk8
     runs-on: ubuntu-latest
+    if: github.event.pull_request.draft == false
     # Ignore the following YAML Schema error 
     timeout-minutes: ${{matrix.timeout}}
     strategy:
