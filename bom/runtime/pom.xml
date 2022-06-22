@@ -153,7 +153,7 @@
         <flyway.version>6.2.3</flyway.version>
         <yasson.version>1.0.6</yasson.version>
         <neo4j-java-driver.version>4.0.0</neo4j-java-driver.version>
-        <mongo-client.version>3.12.0</mongo-client.version>
+        <mongo-client.version>3.12.8</mongo-client.version>
         <mongo-reactivestreams-client.version>1.13.0</mongo-reactivestreams-client.version>
         <mongo-crypt.version>1.0.0</mongo-crypt.version>
         <artemis.version>2.11.0</artemis.version>
